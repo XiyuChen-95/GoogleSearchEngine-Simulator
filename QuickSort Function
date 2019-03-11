@@ -1,0 +1,113 @@
+package SearchEngine;
+
+import java.util.Arrays;
+
+/**
+ * This class is to store all the quickSort functions/methods
+ * There are two main methods partition and quickSort
+ * There is also a main method to test the functionality of
+ * the partition method and quickSort method
+ * @author Yoyo
+ *
+ */
+public class QuickSortFunc {
+	
+	/**
+	 * Partition method will choose a pivot
+	 * and divides the array into subarrays
+	 * with the left side smaller than the pivot
+	 * and the right side greater than the pivot
+	 * @param array	the array where partition will be performed on
+	 * @param p	the first element of the array
+	 * @param r	the last element of the array
+	 * @return to the pivot
+	 */
+	int partition(int[] array, int p, int r)
+	{
+		// Initializing the pivot
+		int x = array[r];
+		int i = p - 1;
+
+		for (int j = p; j < r; j++)
+		{
+			if (array[j] <= x)
+			{
+				i++;
+				// Exchange A[i] and A[j]
+				int temp1 = array[i];
+				array[i] = array[j];
+				array[j] = temp1;
+			}
+		}
+		
+		// Exchange A[i + 1] and A[r]
+		int temp2 = array[i + 1];
+		array[i + 1] = array[r];
+		array[r] = temp2;
+		
+		return i + 1;
+	}
+	
+	/**
+	 * Sort the array by recursively calling itself
+	 * @param array array to be sorted
+	 * @param p	the left most element in array
+	 * @param r	the right most element in array
+	 */
+	void quickSort(int[] array, int p, int r)
+	{
+		if (p < r)
+		{
+			int q = partition(array, p, r);
+			quickSort(array, p, q-1);
+			quickSort(array, q + 1, r);
+		}
+	}
+	
+	/**
+	 * Main method used to test out the functionality
+	 * of the above methods
+	 * @param args
+	 */
+	public static void main (String[] args)
+	{
+		int[] invertedOrder = {20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
+		int[] partitionOrder = {1, 9, 8, 2, 7, 3, 6, 4, 5, 11, 20, 19, 12, 18, 13, 17, 14, 16, 15, 10};
+		int[] randomOrder = {5, 10, 15, 4, 7, 19, 3, 14, 8, 20, 16, 6, 18, 2, 11, 17, 1, 12, 9, 13};
+		
+		QuickSortFunc sortArray = new QuickSortFunc();
+		
+		// Worst Case
+		long startTime1 = System.nanoTime();
+		
+		sortArray.quickSort(invertedOrder, 0, invertedOrder.length - 1);
+		
+		long endTime1 = System.nanoTime();
+		
+		System.out.println("Worst Case Time = " + (endTime1 - startTime1));
+		
+		System.out.println(Arrays.toString(invertedOrder));
+		
+		// Best Case
+		long startTime2 = System.nanoTime();
+		
+		sortArray.quickSort(partitionOrder, 0, partitionOrder.length - 1); 
+		
+		long endTime2 = System.nanoTime();
+		
+		System.out.println("Best Case Time = " + (endTime2 - startTime2));
+		 
+		System.out.println(Arrays.toString(partitionOrder));
+		
+		// Average Case
+		long startTime3 = System.nanoTime();
+		
+		sortArray.quickSort(randomOrder, 0, randomOrder.length - 1); 
+		
+		long endTime3 = System.nanoTime();
+		
+		System.out.println("Average Case Time = " + (endTime3 - startTime3));
+ 
+		System.out.println(Arrays.toString(randomOrder));	
+	}
+}
