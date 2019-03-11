@@ -1,0 +1,378 @@
+package SearchEngine;
+
+import java.util.ArrayList;
+
+/**
+ * This class is to store all the methods of RB tree
+ * such as the insertion and deletion
+ * 
+ * @author Yoyo
+ *
+ */
+
+public class RBTree {
+	Node root;
+	Node u, w, x, y, z;
+	Node nil = new Node(-1);
+	public static ArrayList<Integer> sortedScores;
+	public static ArrayList<String> colors;
+	public int index1 = 0;
+	
+	/**
+	 * Constructing a RBTree Object
+	 * Initializing all the variables
+	 */
+	public RBTree(){
+		nil.color = "black";
+		this.root = nil;
+		sortedScores = new ArrayList<Integer>();
+		colors = new ArrayList<String>();
+	}
+	
+	/** 
+	 * Recursively prints the key of every TreeNode in the 
+	 * tree in numerical order (from left to right). 
+	 **/
+	public void inOrderTreeWalk(Node x) {
+		if(x != null) {													
+			inOrderTreeWalk(x.leftChild);									
+			
+			
+			if(x != nil) {
+				//System.out.println("Score: " + x.key + " | Color: " + x.color);
+			}
+			inOrderTreeWalk(x.rightChild);
+		}
+	}
+	
+	/**
+	 * Get a arraylist with the sorted scores in it
+	 * @param root
+	 * @return sorted scores
+	 */
+	public ArrayList<Integer> storeKeyValues(Node root)
+	{
+		treeTravel(root);
+		return sortedScores;
+	}
+	
+	/**
+	 * adds the key and the colors to the array list
+	 * @param node
+	 */
+	private void treeTravel(Node node)
+	{
+		if(node != nil)
+		{
+			treeTravel(node.leftChild);
+			sortedScores.add(node.key);
+			colors.add(node.color);
+			treeTravel(node.rightChild);
+		}
+	}
+	
+	/**
+	 * Insert a new node into the red black tree
+	 * @param tree the tree the node is inserted to
+	 * @param z the node that is being inserted
+	 */
+	public void RBInsert(RBTree tree, Node z) {
+		y = tree.nil;
+		x = tree.root;
+		while(x != tree.nil) {
+			y = x;
+			if(z.key < x.key) {
+				x = x.leftChild;
+			}else {
+				x = x.rightChild;
+			}
+		}
+		z.parent = y;
+		if(y == tree.nil) {
+			tree.root = z;
+		}else if(z.key < y.key) {
+			y.leftChild = z;
+		}else {
+			y.rightChild = z;
+		}
+		z.leftChild = tree.nil;
+		z.rightChild = tree.nil;
+		z.color = "red";
+		RBInsertFixup(tree, z);
+	}
+	
+	/**
+	 * Fix up the balance of the tree while inserting
+	 * new nodes into the tree
+	 * @param tree the tree that is being fixed
+	 * @param z the node that is being fixed
+	 */
+	public void RBInsertFixup(RBTree tree, Node z) {
+		while(z.parent.color == "red") {
+			if(z.parent == z.parent.parent.leftChild) {
+				y = z.parent.parent.rightChild;
+				if(y.color == "red") {
+					z.parent.color = "black";
+					y.color = "black";
+					z.parent.parent.color = "red";
+					z = z.parent.parent;
+				}else if(z == z.parent.rightChild) {
+					z = z.parent;
+					leftRotate(tree, z);
+				}else {
+					z.parent.color = "black";
+					z.parent.parent.color = "red";
+					rightRotate(tree, z.parent.parent);
+				}
+			}else {
+				y = z.parent.parent.leftChild;
+				if(y.color == "red") {
+					z.parent.color = "black";
+					y.color = "black";
+					z.parent.parent.color = "red";
+					z = z.parent.parent;
+				}else if(z == z.parent.leftChild) {
+					z = z.parent;
+					rightRotate(tree, z); 
+				}else {
+					z.parent.color = "black";
+					z.parent.parent.color = "red";
+					leftRotate(tree, z.parent.parent);  
+				}
+			}
+		}
+		tree.root.color = "black";
+	}
+	
+	/**
+	 * Rotate to the left through a given node
+	 * @param tree the tree that is performing rotation
+	 * @param x the node that is the center of the rotation
+	 */
+	public void leftRotate(RBTree tree, Node x) {
+		y = x.rightChild;
+		x.rightChild = y.leftChild;
+		if(y.leftChild != tree.nil) {
+			y.leftChild.parent = x;
+		}
+		y.parent = x.parent;
+		if(x.parent == tree.nil) {
+			tree.root = y;
+		}else if(x == x.parent.leftChild) {
+			x.parent.leftChild = y;
+		}else {
+			x.parent.rightChild = y;
+		}
+		y.leftChild = x;
+		x.parent = y;
+	}
+	
+	/**
+	 * Rotate to the right 
+	 * @param tree	being rotated
+	 * @param x	the center node
+	 */
+	public void rightRotate(RBTree tree, Node x) {
+		y = x.leftChild;
+		x.leftChild = y.rightChild;
+		if(y.rightChild != tree.nil) {
+			y.rightChild.parent = x;
+		}
+		y.parent = x.parent;
+		if(x.parent == tree.nil) {
+			tree.root = y;
+		}else if(x == x.parent.rightChild) {
+			x.parent.rightChild = y;
+		}else {
+			x.parent.leftChild = y;
+		}
+		y.rightChild = x;
+		x.parent = y;
+	}
+		
+	/**
+	 * Replace one subtree as a child of its parent with
+	 * another subtree
+	 * @param tree
+	 * @param u	being replaced
+	 * @param v	replace node
+	 */
+	public void RBTransplant(RBTree tree, Node u, Node v) {
+		if(u.parent == tree.nil) {
+			tree.root = v;
+		}else if(u == u.parent.leftChild) {
+			u.parent.leftChild = v;
+		}else {
+			u.parent.rightChild = v;
+		}
+		v.parent = u.parent;
+
+	}
+	
+	/**
+	 * Deleting a node from the tree
+	 * @param tree
+	 * @param z node to be deleted
+	 */
+	public void RBDelete(RBTree tree, Node z) {
+		y = z;
+		String yOriginalColor = y.color;
+		if(z.leftChild == tree.nil) {
+			x = z.rightChild;
+			RBTransplant(tree, z, z.rightChild);
+		}else if(z.rightChild == tree.nil) {
+			x = z.leftChild;
+			RBTransplant(tree, z, z.leftChild);
+		}else {
+			y = treeMin(z.rightChild);
+			yOriginalColor = y.color;
+			x = y.rightChild;
+			if(y.parent == z) {
+				x.parent = y;
+			}else {
+				RBTransplant(tree, y, y.rightChild);
+				y.rightChild = z.rightChild;
+				y.rightChild.parent = y;
+			}
+			RBTransplant(tree, z, y);
+			y.leftChild = z.leftChild;
+			y.leftChild.parent = y;
+			y.color = z.color;
+		}
+		if(yOriginalColor == "black") {
+			RBDeleteFixup(tree, x);
+		}
+		
+		for(int i = 0; i < sortedScores.size(); i ++)
+		{
+			if (sortedScores.get(i) == z.key)
+			{
+				sortedScores.remove(i);
+				colors.remove(i);
+			}
+		}
+	}
+	
+	
+	/**
+	 * Balance fix up after deleting the tree
+	 * @param tree
+	 * @param x node to be fixed
+	 */
+	public void RBDeleteFixup(RBTree tree, Node x) {
+		while(x != tree.root && x.color == "black") {
+			if(x == x.parent.leftChild) {
+				w = x.parent.rightChild;
+				if(w.color == "red") {
+					w.color = "black";
+					x.parent.color = "red";
+					leftRotate(tree, x.parent);
+					w = x.parent.rightChild;
+				}
+				if(w.leftChild.color == "black" && w.rightChild.color == "black") {
+					w.color = "red";
+					x = x.parent;
+				}else if(w.rightChild.color == "black") {
+					w.leftChild.color = "black";
+					w.color = "red";
+					rightRotate(tree, w);
+					w = x.parent.rightChild;
+				}else {
+					w.color = x.parent.color;
+					x.parent.color = "black";
+					w.rightChild.color = "black";
+					leftRotate(tree, x.parent);
+					x = tree.root;
+				}
+			}else {
+				w = x.parent.leftChild;
+				if(w.color == "red") {
+					w.color = "black";
+					x.parent.color = "red";
+					rightRotate(tree, x.parent);
+					w = x.parent.leftChild;
+				}
+				if(w.rightChild.color == "black" && w.leftChild.color == "black") {
+					w.color = "red";
+					x = x.parent;
+				}else if(w.leftChild.color == "black") {
+					w.rightChild.color = "black";
+					w.color = "red";
+					leftRotate(tree, w);
+					w = x.parent.leftChild;
+				}else {
+					w.color = x.parent.color;
+					x.parent.color = "black";
+					w.leftChild.color = "black";
+					rightRotate(tree, x.parent);
+					x = tree.root;
+				}
+			}
+		}
+		x.color = "black";
+	}
+	
+	
+	/** 
+	 * Recursively search the tree starting at a chosen TreeNode to find the TreeNode
+	 * with the desired key. 
+	 * @param x
+	 * @param key
+	 * @return to the target key
+	 */
+	public Node treeSearch(Node x, int key) {
+		if(x == nil || key == x.key ) 
+			return x;						
+		if(key < x.key) 			
+			return treeSearch(x.leftChild, key);	
+		else	
+			return treeSearch(x.rightChild, key);
+	}
+	
+	
+	
+	/**
+	 * Finds the minimum value of the tree
+	 * @param	x node where the search starts
+	 * @return	to the minimum value of the tree
+	 */
+	Node treeMin(Node x) {
+		while(x.leftChild != nil) {				// Farthest left TreeNode is the minimum.
+			x = x.leftChild;	
+		}
+		//System.out.println(x.key);
+		return x;
+	}
+	
+	/**
+	 * Finds the maximum value of the tree
+	 * @param x	node where the search starts
+	 * @return	to the maximum value of the tree
+	 */
+	Node treeMax(Node x) {
+		while(x.rightChild != null) {			// Farthest right TreeNode is the max.
+			x = x.rightChild;
+		}
+		return x;
+	}
+	
+	
+	/**
+	 * Gets the successor (TreeNode with the next greatest key) of the chosen TreeNode.
+	 * @param x the node which we find successor of
+	 * @return to the successor
+	 */
+	Node treeSuccessor(Node x) {
+		if(x.rightChild != null) 
+		{
+			return treeMin(x.rightChild);	
+		}
+		Node y = new Node(x.parent.key);
+		while(y != null && x == y.rightChild) 
+		{	
+			x = y;
+			y = y.parent;
+		}
+		return y;
+	}
+}
