@@ -1,0 +1,196 @@
+package SearchEngine;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Random;
+import java.io.*;
+
+public class HeapFunc
+{
+	private int heapSize;
+	private int[] scores;
+	
+	// Construct a HeapFunc construction
+	// takes an array as argument
+	// and assigns the array to the instant variable
+	// initialize the the heap size as the length of the array
+	public HeapFunc(int[] scores)
+	{
+		// Pass the scores to the array
+		this.scores = scores;
+		// Initialize the heap size with the length of the array list
+		heapSize = this.scores.length;
+	}
+	
+	// Getter method to get the private instant variable
+	// get the array of scores
+	int[] getScores()
+	{
+		return this.scores;
+	}
+	
+	// Determine the parent node of the heap
+	int parent(int i)
+	{
+		return i/2;
+	}
+	
+	// Determine the left max heap
+	int left(int i)
+	{
+		return 2 * i;
+	}
+	
+	// Determine the right max heap
+	int right(int i)
+	{
+		return 2 * i + 1;
+	}
+	
+	// Heap sort functions below
+	
+	// maxHeapitfy, takes in a index as argument
+	// finds the left and right children of the index node
+	// perform the maxHeapify, swap parent and child if
+	// the value of child > the value of parent
+	void maxHeapify(int index)
+	{
+		int largest = index;
+		int l = left(index);
+		int r = right(index);
+		
+		if (l <= this.heapSize && this.scores[l - 1] > this.scores[index - 1])
+			largest = l;
+		else
+			largest = index;
+		
+		if (r <= this.heapSize && this.scores[r - 1] > this.scores[largest - 1])
+			largest = r;
+		
+		if (largest != index)
+		{
+			// swap A[i] and A[largest]
+			int temp = this.scores[index - 1];
+			this.scores[index - 1] = this.scores[largest - 1];
+			this.scores[largest - 1] = temp;
+			
+			maxHeapify(largest);
+		}
+	}
+	
+	// Build Max Heap
+	// recursive through the maxHeapify function
+	// sort the parents and children nodes
+	// build up the heap after maxHeapify is finished
+	void buildMaxHeap()
+	{
+		for (int i = heapSize / 2; i > 0; i--)
+		{
+			maxHeapify(i);
+		}
+	}
+	
+	// Heap sort
+	// after building the max heap, this method will
+	// sort the array in order based on the built max heap
+	void HeapSort()
+	{
+		buildMaxHeap();
+		for (int i = this.scores.length - 1; i > 0; i--)
+		{
+			// Swap A[1] and A[i]
+			int temp = this.scores[0];
+			this.scores[0] = this.scores[i];
+			this.scores[i] = temp;
+			
+			// Set heap size down one
+			heapSize--;
+			
+			maxHeapify(1);
+		}
+	}
+	
+	// End of heap sort
+	// Start of priority queues
+	
+	// Max Heap Insert
+	// insert new element to the end of the heap tree
+	// which means, new element will be inserted into the
+	// right most of the last row of the tree
+	void maxHeapInsert(int[] array, int key) throws IOException
+	{
+		heapSize ++;
+		array[heapSize] = Integer.MIN_VALUE;
+		heapIncreaseKey(array, heapSize, key);
+	}
+	
+	// Heap extract max
+	// this method is to extract the max of the heap
+	// after building the max heap, calling this method
+	// will extract the root of the tree
+	int heapExtractMax() throws IOException
+	{
+		if(this.heapSize < 1)
+		{
+			throw new IOException("heap underflow.");
+		}
+		int maximum = this.scores[0];
+		this.scores[0] = this.scores[heapSize - 1];
+		heapSize--;
+		maxHeapify(1);
+		return maximum;
+	}
+	
+	// Heap increase key
+	// increase the value of element's key to the new value key
+	// assuming new key value is greater than the current key value
+	void heapIncreaseKey(int[] array, int i, int key) throws IOException
+	{
+		if (key < array[i])
+		{
+			throw new IOException("new key is smaller than current key.");
+		}
+		array[i] = key;
+		while(i > 1 && array[parent(i)] < array[i])
+		{
+			// Swap A[i] with A[PARENT(i)]
+			int temp = this.scores[i];
+			this.scores[i] = this.scores[parent(i)];
+			this.scores[parent(i)] = temp;
+			i = parent(i);
+		}			
+	}
+	
+	// Heap maximum
+	// This method will take the first element
+	// after the max heap is built
+	// since after builMaxHeap, the first element
+	// would be the max value
+	int heapMax()
+	{
+		return this.scores[0];
+	}
+	
+	// Tester main function in order to test
+	// the method of heap sort
+	public static void main(String[] args) throws IOException
+	{
+		int[] testScores = new int[] {15, 21, 30, 8, 12, 35};
+		HeapFunc heap = new HeapFunc(testScores);
+		
+		// Print unsorted array out once
+		System.out.println(Arrays.toString(heap.getScores()));
+		
+		// Print array after buildMaxHeap
+		heap.buildMaxHeap();
+		System.out.println(Arrays.toString(heap.getScores()));
+		
+		// Extract the element of array with the largest key
+		int max = heap.heapExtractMax();
+		System.out.println(max);
+		
+		// Print sorted array out once
+		heap.HeapSort();
+		System.out.println(Arrays.toString(heap.getScores()));
+	}
+}
