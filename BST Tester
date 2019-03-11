@@ -1,0 +1,153 @@
+package SearchEngine;
+
+import java.util.HashMap;
+import java.util.Random;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Scanner;
+import java.util.ArrayList;
+
+/**
+ * Main Tester class to test out the binary search function
+ * In this class we will be testing out sorting using BST,
+ * searching using BST, inserting using BST, and deleting
+ * using BST.
+ */
+
+public class BSTTester {
+	public static void main (String[] args)
+	{
+		Scanner in = new Scanner(System.in);
+		Random rand = new Random();
+		HashMap<Integer, String> gotUrls = new HashMap<Integer, String>();
+		spider spider = new spider();
+		
+		int[] scoresOfUrls = new int[30];
+		
+		int sumOfScores = 0;
+		int index1 = 0;
+		int index2 = 1;
+		int index3 = 1;
+		int index4 = 1;
+		int index5 = 30;
+		int index6 = 30;
+		int index7 = 30;
+		
+		// Get User inputs
+		System.out.print("Enter a word you want to search: ");
+		String userInputWord = in.nextLine();
+		
+		System.out.print("Enter a score for the first factor: ");
+		int firstScore = in.nextInt();
+		
+		System.out.print("Enter a score for the second factor: ");
+		int secondScore = in.nextInt();
+		
+		System.out.print("Enter a score for the third factor: ");
+		int thirdScore = in.nextInt();
+		
+		System.out.print("Enter a score for the fourth factor: ");
+		int fourthScore = in.nextInt();
+		
+		// Sum up the four factor scores
+		sumOfScores = firstScore + secondScore + thirdScore + fourthScore;
+		
+		spider.search("https://www.nytimes.com/" , userInputWord);
+        
+		// Put the Urls and the value into a hashmap
+		// Store the scores into an array
+		for (String urls:spider.getUrls())
+		{
+			int tempScores = rand.nextInt(1000 + sumOfScores);
+			scoresOfUrls[index1] = tempScores;
+			gotUrls.put(tempScores, urls);
+			index1++;
+		}
+		
+		// Creating a new binary search tree object
+		BinarySearchTree tree = new BinarySearchTree();
+		
+		// Inserting the scores as the nodes of the BST
+		for (int scores:scoresOfUrls)
+		{
+			Node tempNode = new Node(scores);
+			tree.treeInsert(tree, tempNode);
+		}
+		
+		// Print out the sorted scores
+		tree.inOrderTreeWalk(tree.root);
+		
+		System.out.println();
+		
+		// Test out the sorted array after storing them into the array
+		for(int scores:tree.sortedScores)
+		{
+			System.out.print(scores + ", ");
+		}
+		System.out.println();
+		
+		// Sort the 30 URLs using BST
+		System.out.println("************** 30 sorted URLs with Index starting at 1 and Scores Using BST *************");
+		for(int scores:tree.sortedScores)
+		{
+			System.out.println(index2 + ". " + gotUrls.get(scores) + ": [PageRank]: " + index5 + ": [Scores]: " + scores);
+			index2++;
+			index5--;
+		}
+		System.out.println();
+		System.out.println();
+		
+		// Testing the user search for URLs
+		System.out.println(tree.sortedScores.toString());
+		System.out.print("Search for URLs by scores, please enter a score from above: ");
+		int searchScore = in.nextInt();
+		
+		Node target = tree.treeSearch(tree.root, searchScore);
+		String targetURL = gotUrls.get(target.key);
+		
+		System.out.print("Target URL: " + targetURL + ": [Score]: " + target.key);
+		
+		System.out.println();
+		System.out.println();
+		
+		// Testing for user to delete a certain URL by its node
+		System.out.println(tree.sortedScores.toString());
+		System.out.print("Please enter a URL score you want to delete from above URL scores: ");
+		int deleteScore = in.nextInt();
+		
+		Node deletingNode = new Node(deleteScore);
+		tree.treeDelete(tree, deletingNode);
+		
+		System.out.println("************** 30 sorted URLs with Index starting at 1 and Scores after delete *************");
+		for(int scores:tree.sortedScores)
+		{
+			System.out.println(index3 + ". " + gotUrls.get(scores) + ": [PageRank]: " + index6 + ": [Scores]: " + scores);
+			index3++;
+			index6--;
+		}
+		System.out.println();
+		System.out.println();
+		
+		// Testing for User inserting a URL
+		System.out.print("Please enter the URL you want to insert: ");
+		String insertUrl = in.next();
+		
+		System.out.println();
+		
+		System.out.print("Please enter the score for the URL you want to insert: ");
+		int insertScore = in.nextInt();
+		
+		gotUrls.put(insertScore, insertUrl);
+		Node insertScoreNode = new Node(insertScore);
+		tree.treeInsert(tree, insertScoreNode);
+		tree.inOrderTreeWalk(tree.root);
+		
+		System.out.println("************** URLs after inserting User's URL *************");
+		for(int scores:tree.sortedScores)
+		{
+			System.out.println(index4 + ". " + gotUrls.get(scores) + ": [PageRank]: " + index7 + ": [Scores]: " + scores);
+			index4++;
+			index7--;
+		}
+	}
+}
