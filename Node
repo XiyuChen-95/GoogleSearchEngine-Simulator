@@ -1,0 +1,28 @@
+package SearchEngine;
+
+/**
+ * This class is used to be able to create nodes
+ * for the binary search tree
+ * 
+ * @author Yoyo
+ * 
+ */
+public class Node{
+	int key;
+	String color;
+	String orginalColor;
+	Node leftChild, rightChild, parent;
+	
+	/**
+	 * Constructing a new Node with a value
+	 * @param key the value you want to add to the node
+	 */
+	public Node(int key)
+	{
+		this.key = key;
+		leftChild = null;
+		rightChild = null;
+		color = null;
+		orginalColor = null;
+	}
+}
